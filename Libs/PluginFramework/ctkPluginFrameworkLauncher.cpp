@@ -74,18 +74,15 @@ void ctkPluginFrameworkLauncher::setFrameworkProperties(const ctkProperties& pro
 
 //----------------------------------------------------------------------------
 long ctkPluginFrameworkLauncher::install(const QString& symbolicName, ctkPluginContext* context)
-{
+{ 
   QString pluginPath = getPluginPath(symbolicName);
   if (pluginPath.isEmpty()) return -1;
 
-  ctkPluginContext* pc = context;
-
-  if (pc == 0 && d->fwFactory == 0) {
+  if (context == 0 && d->fwFactory == 0) {
     d->fwFactory = new ctkPluginFrameworkFactory(d->fwProps);
     try
     {
       d->fwFactory->getFramework()->init();
-      pc = getPluginContext();
     }
     catch (const ctkPluginException& exc)
     {
@@ -96,8 +93,10 @@ long ctkPluginFrameworkLauncher::install(const QString& symbolicName, ctkPluginC
     }
   }
 
+  
   try
   {
+	ctkPluginContext* pc = context ? context : getPluginContext();
     return pc->installPlugin(QUrl::fromLocalFile(pluginPath))->getPluginId();
   }
   catch (const ctkPluginException& exc)
